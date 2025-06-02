@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alice In Wonderland</title>
+</head>
+<style>
+    #box {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 0px auto;
+        background-image: url(./images/2-start/grass.gif);
+    }
+
+    .alice {
+        position: absolute;
+        visibility: hidden;
+    }
+
+    .road {
+        position: absolute;
+        visibility: hidden;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+</style>
+
+<script>
+    let alicex = 275; // alice初始 X 座標
+    let alicey = 265; // alice初始 Y 座標
+    let press = false; // 遊戲是否開始
+    let bgm = new Audio("./audio/01.mp3"); // 背景音樂
+    let text = new Audio("./audio/text.mp3"); //對話框點擊音效
+    let walk = new Audio("./audio/walk.mp3"); //走路音效
+
+
+    // 初始化遊戲
+    function start() {
+        press = true;
+        bgm.play();
+        document.getElementById("alice").style.left = `${alicex}px`;
+        document.getElementById("alice").style.top = `${alicey}px`;
+        document.getElementById("alice").style.visibility = "visible";
+        document.getElementById("road").style.visibility = "visible"; // 確保路可見
+    }
+
+    // 碰撞檢測
+    function checkCollision() {
+        checkRoadCollision();
+    }
+
+    function checkRoadCollision() {
+        // 獲取路與alice的邊界框
+        const road = document.getElementById("road");
+        const roadRect = road.getBoundingClientRect();
+        const alice = document.getElementById("alice");
+        const aliceRect = alice.getBoundingClientRect();
+
+        // 檢查兩個框是否重疊
+        if (
+            aliceRect.left < roadRect.right &&
+            aliceRect.right > roadRect.left &&
+            aliceRect.top < roadRect.bottom &&
+            aliceRect.bottom > roadRect.top &&
+            road.style.visibility === "visible"
+        ) {
+            road.style.visibility = "hidden"; // 碰到路
+            location.href = "3-catroad.html";
+
+        }
+    }
+
+    // 鍵盤事件監聽
+    document.addEventListener("keydown", (event) => {
+        if (!press) return; // 如果遊戲尚未開始，無法移動
+        switch (event.key) {
+            case "ArrowLeft":
+            case "a":
+            case "A":
+                moveLeft();
+                break;
+            case "ArrowUp":
+            case "w":
+            case "W":
+                moveUp();
+                break;
+            case "ArrowRight":
+            case "d":
+            case "D":
+                moveRight();
+                break;
+            case "ArrowDown":
+            case "s":
+            case "S":
+                moveDown();
+                break;
+        }
+        checkCollision(); // 每次移動後檢查碰撞
+    });
+
+    // alice移動控制
+    function moveLeft() {
+        bgm.play();
+        walk.play();
+        if (alicex > 0) {
+            alicex -= 50;
+            updateAlicePosition();
+        }
+    }
+
+    function moveUp() {
+        bgm.play();
+        walk.play();
+        if (alicey > 0) {
+            alicey -= 50;
+            updateAlicePosition();
+        }
+    }
+
+    function moveRight() {
+        bgm.play();
+        walk.play();
+        if (alicex < 550) {
+            alicex += 50;
+            updateAlicePosition();
+        }
+    }
+
+    function moveDown() {
+        bgm.play();
+        walk.play();
+        if (alicey < 550) {
+            alicey += 50;
+            updateAlicePosition();
+        }
+    }
+
+    // 更新alice位置
+    function updateAlicePosition() {
+        const alice = document.getElementById("alice");
+        alice.style.left = `${alicex}px`;
+        alice.style.top = `${alicey}px`;
+    }
+
+    // 定義文字圖片的路徑
+    const images = ["images/2-start/text-1.png", "images/2-start/text-2.png", "images/2-start/text-3.png", "images/2-start/text-4.png"];
+    let currentImageIndex = 0;
+
+    // 切換文字圖片的函式
+    function switchImage() {
+        if (currentImageIndex < images.length - 1) {
+            currentImageIndex++;
+            document.getElementById("image").src = images[currentImageIndex];
+            text.play();
+            bgm.play();
+
+            // 如果已到最後一張文字圖片，禁用點擊功能
+            if (currentImageIndex === images.length - 1) {
+                document.getElementById("image").style.cursor = "not-allowed";
+                document.getElementById("image").onclick = null; // 移除點擊事件
+            }
+        }
+    }
+    // 自動啟動遊戲
+    window.onload = start;
+
+</script>
+
+<body>
+    <h1 align="center" style="color:#4B39BF">Alice In Wonderland</h1>
+    <p align="center"><b>愛麗絲看到一隻活蹦亂跳的兔子，忍不住追了上去...</b><br>遊玩方法：請先使用滑鼠點擊下方對話框進行對話，再利用鍵盤上下左右或WASD來操控愛麗絲。</p>
+    <hr>
+    <div id="box">
+        <img id="alice" src="./images/alice.gif" width="50" class="alice">
+        <img id="road" src="./images/road.png" width="15" class="road" style="left: 584px; top: 287.7px;">
+    </div>
+
+    <p align="center">
+        <img id="image" src="images/2-start/text-1.png" alt="文字" style="cursor: pointer; width: 600px; height: 150px;" onclick="switchImage()">
+    </p>
+
+
+</body>
+
+</html>

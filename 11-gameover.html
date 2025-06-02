@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alice In Wonderland</title>
+</head>
+<style>
+    #box {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 0px auto;
+        background-image: url(./images/forest-gameover.gif);
+    }
+
+    .restart {
+        position: absolute;
+        left: 185px;
+        top: 300px;
+    }
+
+    .gameover {
+        position: absolute;
+        left: 50px;
+        top: 160px;
+
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+</style>
+<script>
+    let play = new Audio("./audio/play.mp3"); //點擊音效
+
+    //下一頁
+    function next() {
+        location.href = "11-killpoker.html";
+    }
+
+    function start() {
+        play.play();
+        setInterval(next, 550); //等待音效撥放完畢
+    }
+</script>
+
+<body>
+    <h1 align="center" style="color:#4B39BF">Alice In Wonderland</h1>
+    <p align="center"><b>愛麗絲看到一隻活蹦亂跳的兔子，忍不住追了上去...</b><br>遊玩方法：請先使用滑鼠點擊下方對話框進行對話，再利用鍵盤上下左右或WASD來操控愛麗絲。</p>
+    <hr>
+    <div id="box">
+        <img id="gameover" src="./images/gameover.png" width="500" class="gameover">        <img id="restart" src="./images/restart.png" width="240" onclick="start()" class="restart">
+    </div>
+    <h3 align="center"><b>經過一番激烈的鬥爭之後，愛麗絲還是被撲克牌士兵們抓走了 . . . 。</b>
+    </h3>
+
+</body></html>

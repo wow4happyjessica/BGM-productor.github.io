@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alice In Wonderland</title>
+</head>
+<style>
+    #box {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 0px auto;
+        background-image: url(./images/forest-start.gif);
+    }
+
+    .start {
+        position: absolute;
+        left: 200px;
+        top: 345px;
+    }
+
+    .t {
+        position: absolute;
+        left: 150px;
+        top: 45px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+</style>
+<script>
+    let play = new Audio("./audio/play.mp3"); //點擊音效
+
+    //下一頁
+    function next() {
+        location.href = "1-story.html";
+    }
+
+    function start() {
+        play.play();
+        setInterval(next, 550); //等待音效撥放完畢
+    }
+
+</script>
+
+<body>
+    <h1 align="center" style="color:#4B39BF">Alice In Wonderland</h1>
+    <p align="center"><b>愛麗絲看到一隻活蹦亂跳的兔子，忍不住追了上去...</b><br>遊玩方法：請先使用滑鼠點擊下方對話框進行對話，再利用鍵盤上下左右或WASD來操控愛麗絲。</p>
+    <hr>
+    <div id="box">
+        <img id="t" src="./images/title.png" width="320" class="t">
+        <img id="start" src="./images/play.png" width="200" onclick="start()" class="start">
+    </div>
+
+</body>
+
+</html>

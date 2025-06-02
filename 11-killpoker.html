@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alice In Wonderland</title>
+</head>
+
+<style>
+    #box {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 0px auto;
+        background-image: url(images/11-killpoker/grass.gif);
+        background-size: cover;
+    }
+
+    .cards {
+        position: absolute;
+        visibility: hidden;
+    }
+
+    .alice {
+        position: absolute;
+        left: 280px;
+        top: 225px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+</style>
+
+<script>
+    let n = 16;
+    let cards = new Object();
+    let starting = false;
+    let count = 0;
+    let s = 30;
+    let bgm = new Audio("./audio/killpokerbgm.mp3");
+    let girl = new Audio("./audio/girl.mp3");
+
+    function initiate() {
+        let name;
+        let x, y, x0, y0;
+        for (let i = 1; i <= n; i++) {
+            name = "c" + i.toString()
+            x = Math.floor(Math.random() * 525);
+            x0 = Math.floor(Math.random() * 525);
+            y = Math.floor(Math.random() * 525);
+            y0 = Math.floor(Math.random() * 525); //卡牌起始位置
+            cards[name] = {
+                x: x,
+                y: y,
+                x0: x0,
+                y0: y0
+            };
+            document.getElementById(name).style.left = x.toString() + "px";
+            document.getElementById(name).style.top = y.toString() + "px";
+        }
+        for (let i = 1; i <= n; i++) {
+            name = "c" + i.toString();
+            document.getElementById(name).style.visibility = "visible";
+        }
+    }
+
+    function change() {
+        let name;
+        for (let i = 1; i <= n; i++) {
+            name = "c" + i.toString();
+            cards[name].x = cards[name].x + (cards[name].x0 - cards[name].x) * 0.05 + Math.floor(Math.random() * 7) - 3;
+            cards[name].y = cards[name].y + (cards[name].y0 - cards[name].y) * 0.05 + Math.floor(Math.random() * 7) - 3;
+            document.getElementById(name).style.left = cards[name].x.toString() + "px";
+            document.getElementById(name).style.top = cards[name].y.toString() + "px"; //卡牌隨機變動
+        }
+    }
+
+    function jump() {
+        for (let i = 1; i <= n; i++) {
+            name = "c" + i.toString();
+            x0 = Math.floor(Math.random() * 525);
+            y0 = Math.floor(Math.random() * 525); //卡牌變動位置
+            cards[name].x0 = x0;
+            cards[name].y0 = y0;
+        }
+    }
+
+    function fail() {
+        location.href = "11-gameover.html";
+    }
+
+    function countdown() {
+        s = s - 1;
+        document.getElementById("sec").innerHTML = "剩餘時間： " + s.toString();
+        if (s <= 0) {
+            girl.play();
+            setInterval(fail, 1000);
+        }
+    }
+
+    function start() {
+        if (!starting) {
+            starting = true;
+            document.getElementById("sec").innerHTML = "剩餘時間： 30";
+            initiate();
+            setInterval(change, 40);
+            setInterval(jump, 2000);
+            setInterval(countdown, 1000);
+        }
+    }
+
+    function suc() {
+        location.href = "12-end.html";
+    }
+
+    function hit(obj) {
+        let kill = new Audio("./audio/kill.mp3");
+        kill.play();
+        bgm.play();
+        obj.style.visibility = "hidden";
+        count = count + 1;
+        document.getElementById("count").innerHTML = count.toString();
+        if (count >= n) {
+            setInterval(suc, 1300);
+        }
+    }
+
+    function autoStart() {
+        let countDown = 3;
+        document.getElementById("sec").innerHTML = "開始倒數： " + countDown;
+        const interval = setInterval(() => {
+            countDown--;
+            document.getElementById("sec").innerHTML = "開始倒數： " + countDown;
+            if (countDown <= 0) {
+                clearInterval(interval);
+                start();
+            }
+        }, 1000);
+    }
+
+    window.onload = autoStart;
+
+</script>
+
+<body>
+    <h1 align="center" style="color:#4B39BF">Alice In Wonderland</h1>
+    <p align="center"><b>愛麗絲看到一隻活蹦亂跳的兔子，忍不住追了上去...</b><br>遊玩方法：請先使用滑鼠點擊下方對話框進行對話，再利用鍵盤上下左右或WASD來操控愛麗絲。</p>
+    <hr>
+    <div id="box">
+        <img id="alice" src="./images/alice.gif" width="50" class="alice">
+
+        <script>
+            let img;
+            for (let i = 1; i <= n; i++) {
+                img = '<img id="c' + i.toString() + '"  src="./images/11-killpoker/c' + (i % 16 + 1).toString() + '.gif" class="cards" width="50" onclick="hit(this)">';
+                document.write(img);
+            }
+
+        </script>
+    </div>
+    <h4 align="center"><span id="sec">開始倒數： 3</span> ， 擊退數量 = <span id="count">0</span></h4>
+</body>
+
+</html>

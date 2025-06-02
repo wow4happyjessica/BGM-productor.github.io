@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Alice In Wonderland</title>
+</head>
+<style>
+    #box {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        margin: 0px auto;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+</style>
+
+<script>
+    let get = new Audio("./audio/story.mp3"); //對話框點擊音效
+    let bgm = new Audio("./audio/endbgm.mp3");
+
+    // 定義圖片的路徑
+    const images = ["images/12-end/story-1.png", "images/12-end/story-2.png", "images/12-end/story-3.png", "images/12-end/story-4.png", "images/12-end/story-5.png", "images/12-end/story-6.png", "images/12-end/story-7.png", "images/12-end/story-8.png", "images/12-end/forest-end.gif"];
+    let currentImageIndex = 0;
+
+    // 切換圖片的函式
+    function switchImage() {
+        if (currentImageIndex < images.length - 1) {
+            currentImageIndex++;
+            document.getElementById("image").src = images[currentImageIndex];
+            get.play();
+            bgm.play();
+
+
+            // 如果已到最後一張圖片，禁用點擊功能
+            if (currentImageIndex === images.length - 1) {
+                document.getElementById("image").style.cursor = "not-allowed";
+                document.getElementById("image").onclick = null;
+            }
+        }
+    }
+
+    function home() {
+        location.href = "0-index.html";
+    }
+
+    // 自動啟動遊戲
+    window.onload = start;
+
+</script>
+
+<body>
+    <h1 align="center" style="color:#4B39BF">Alice In Wonderland</h1>
+    <p align="center"><b>愛麗絲看到一隻活蹦亂跳的兔子，忍不住追了上去...</b><br>遊玩方法：請先使用滑鼠點擊下方對話框進行對話，再利用鍵盤上下左右或WASD來操控愛麗絲。</p>
+    <hr>
+    <div id="box">
+        <img id="image" src="images/12-end/story-1.png" alt="文字" style="cursor: pointer; width: 600px; height: 600px;" onclick="switchImage()">
+        <p align="center">
+            <input type="button" value="Home" onclick="home()">
+        </p>
+    </div>
+
+</body>
+
+</html>

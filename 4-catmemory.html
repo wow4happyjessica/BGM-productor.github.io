@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4x4 Memory Card Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: none;
+            /* 移除背景顏色 */
+        }
+
+        #game-box {
+            width: 600px;
+            height: 600px;
+            margin: 20px auto 0;
+            /* 放置於頁面頂端附近 */
+            position: relative;
+        }
+
+        #game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .card {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            margin: 0px auto;
+            background-image: url(./images/4-catmemory/cardback.png)
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .flipped img {
+            display: block;
+        }
+
+        #timer {
+            position: absolute;
+            top: 655px;
+            left: 260px;
+            font-size: 18px;
+            color: #000;
+            /* 調整文字顏色以顯示清楚 */
+        }
+
+        #status {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            font-size: 18px;
+            color: #000;
+            /* 調整文字顏色 */
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1 align="center" style="color:#4B39BF">Alice In Wonderland</h1>
+    <p align="center"><b>愛麗絲看到一隻活蹦亂跳的兔子，忍不住追了上去...</b><br>遊玩方法：請先使用滑鼠點擊下方對話框進行對話，再利用鍵盤上下左右或WASD來操控愛麗絲。</p>
+    <hr>
+    <div id="game-box">
+
+        <div id="timer">開始倒數: 5 秒</div>
+        <div id="game-container"></div>
+        <div id="status"></div>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="./audio/memorybgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="flip-sound">
+        <source src="./audio/flip.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="success-sound">
+        <source src="./audio/success.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="failure-sound">
+        <source src="./audio/failure.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 初始化遊戲資料
+        const images = [
+            "./images/4-catmemory/card1.png", "./images/4-catmemory/card2.png", "./images/4-catmemory/card3.png", "./images/4-catmemory/card4.png",
+            "./images/4-catmemory/card5.png", "./images/4-catmemory/card6.png", "./images/4-catmemory/card7.png", "./images/4-catmemory/card8.png"
+        ]; // 替換成圖片檔案名稱
+        let cards = [...images, ...images];
+        let flippedCards = [];
+        let matchedCards = 0;
+        let timeLeft = 30;
+        let preparationTime = 5;
+        let timer;
+
+        // 音效元素
+        const bgMusic = document.getElementById("bg-music");
+        const flipSound = document.getElementById("flip-sound");
+        const successSound = document.getElementById("success-sound");
+        const failureSound = document.getElementById("failure-sound");
+
+
+        // 將卡片隨機排序
+        cards.sort(() => 0.5 - Math.random());
+
+        // 生成卡片到遊戲區域
+        const gameContainer = document.getElementById("game-container");
+        cards.forEach((image, index) => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.dataset.image = image;
+            card.dataset.index = index;
+            const img = document.createElement("img");
+            img.src = image;
+            img.alt = "Memory card image";
+            card.appendChild(img);
+            card.addEventListener("click", () => flipCard(card));
+            gameContainer.appendChild(card);
+        });
+
+        // 翻牌邏輯
+        function flipCard(card) {
+            if (card.classList.contains("flipped") || flippedCards.length === 2) {
+                return;
+            }
+
+            flipSound.currentTime = 0; // 重置翻牌音效
+            flipSound.play(); // 播放翻牌音效
+            bgMusic.play(); // 播放背景音樂
+
+            card.classList.add("flipped");
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+
+        // 檢查配對
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+
+            if (card1.dataset.image === card2.dataset.image) {
+                matchedCards += 2;
+                flippedCards = [];
+                successSound.play(); // 播放成功音效
+                if (matchedCards === cards.length) {
+                    endGame(true);
+                }
+            } else {
+                failureSound.play(); // 播放失敗音效
+                setTimeout(() => {
+                    card1.classList.remove("flipped");
+                    card2.classList.remove("flipped");
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+
+        // 記憶階段展示卡片
+        function showAllCards() {
+            const allCards = document.querySelectorAll(".card");
+            allCards.forEach(card => card.classList.add("flipped"));
+        }
+
+        // 隱藏所有卡片
+        function hideAllCards() {
+            const allCards = document.querySelectorAll(".card");
+            allCards.forEach(card => card.classList.remove("flipped"));
+        }
+
+        // 倒數計時器
+        function startTimer() {
+            const timerElement = document.getElementById("timer");
+            timer = setInterval(() => {
+                timeLeft -= 1;
+                timerElement.textContent = `剩餘時間: ${timeLeft} 秒`;
+
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        // 記憶階段計時
+        function startPreparation() {
+            const timerElement = document.getElementById("timer");
+            timer = setInterval(() => {
+                preparationTime -= 1;
+                timerElement.textContent = `開始倒數: ${preparationTime} 秒`;
+
+                if (preparationTime <= 0) {
+                    clearInterval(timer);
+                    hideAllCards();
+                    startTimer();
+                }
+            }, 1000);
+        }
+        //下一頁
+        function suc() {
+            location.href = "5-road.html";
+        }
+
+        function fail() {
+            location.href = "4-gameover.html";
+        }
+
+
+
+        // 結束遊戲
+        function endGame(success) {
+            clearInterval(timer);
+            bgMusic.pause(); // 停止背景音樂
+            const statusElement = document.getElementById("status");
+            if (success) {
+                setInterval(suc, 1500);
+            } else {
+                setInterval(fail, 700);
+            }
+            document.querySelectorAll(".card").forEach(card => {
+                card.removeEventListener("click", () => flipCard(card));
+            });
+        }
+
+        // 啟動遊戲
+        showAllCards();
+        startPreparation();
+
+    </script>
+</body>
+
+</html>
